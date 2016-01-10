@@ -387,14 +387,18 @@ public class MainActivity extends BaseActivity implements Constants {
 
         private boolean hasRoot;
         private boolean hasBusybox;
+        private boolean hasToybox;
 
         @Override
         protected Void doInBackground(Void... params) {
-            // Check root access and busybox installation
+            // Check root access and busybox/Toybox installation
             if (RootUtils.rooted()) hasRoot = RootUtils.rootAccess();
-            if (hasRoot) hasBusybox = RootUtils.busyboxInstalled();
+            if (hasRoot) {
+                hasBusybox = RootUtils.busyboxInstalled();
+                hasToybox = RootUtils.toyboxInstalled();
+           }
 
-            if (hasRoot && hasBusybox) {
+            if (hasRoot && (hasBusybox || hasToybox)) {
                 // Set permissions to specific files which are not readable by default
                 String[] writePermission = {LMK_MINFREE};
                 for (String file : writePermission)
@@ -408,7 +412,7 @@ public class MainActivity extends BaseActivity implements Constants {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (!hasRoot || !hasBusybox) {
+            if (!hasRoot || (!hasBusybox && !hasToybox)) {
                 Intent i = new Intent(MainActivity.this, TextActivity.class);
                 Bundle args = new Bundle();
                 args.putString(TextActivity.ARG_TEXT, !hasRoot ? getString(R.string.no_root)

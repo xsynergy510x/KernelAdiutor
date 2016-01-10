@@ -142,15 +142,19 @@ public class BootService extends Service {
     private void apply(List<String> applys, List<String> plugins) {
         boolean hasRoot = false;
         boolean hasBusybox = false;
+        boolean hasToybox = false;
         if (RootUtils.rooted()) hasRoot = RootUtils.rootAccess();
-        if (hasRoot) hasBusybox = RootUtils.busyboxInstalled();
+        if (hasRoot) {
+            hasBusybox = RootUtils.busyboxInstalled();
+            hasToybox = RootUtils.toyboxInstalled();
+        }
         RootUtils.closeSU();
 
         String message = getString(R.string.apply_on_boot_failed);
         if (!hasRoot) message += ": " + getString(R.string.no_root);
-        else if (!hasBusybox) message += ": " + getString(R.string.no_busybox);
+        else if (!hasBusybox && !hasToybox) message += ": " + getString(R.string.no_busybox);
 
-        if (!hasRoot || !hasBusybox) {
+        if (!hasRoot || (!hasBusybox && !hasToybox)) {
             toast(message);
             mBuilder.setContentText(message);
             mNotifyManager.notify(id, mBuilder.build());

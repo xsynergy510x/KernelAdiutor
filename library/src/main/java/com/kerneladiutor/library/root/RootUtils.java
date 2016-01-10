@@ -53,6 +53,10 @@ public class RootUtils {
         return existBinary("busybox");
     }
 
+    public static boolean toyboxInstalled() {
+        return existBinary("toybox");
+    }
+
     private static boolean existBinary(String binary) {
         for (String path : System.getenv("PATH").split(":")) {
             if (!path.endsWith("/")) path += "/";
